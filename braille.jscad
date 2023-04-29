@@ -4088,7 +4088,8 @@ function main(params)
   var fMoon = Font3D.parse(dotty_moon_ttf_data.buffer);     
 
   //switch between rnibMoon and DottyMoon font
-  if(params.dottyMoon == false){
+  if(params.dottyMoon == false)
+  {
     fMoon =  Font3D.parse(rnibmoon_ttf_data.buffer);
   }
   
@@ -4102,13 +4103,15 @@ function main(params)
 	//array of CSG objects for each line
 	var linearr = [];
 	
-	//every userinput line is beeing processed
-	for(line = 0; line < textarr.length; line++){ 
+	//alle Zeilen userText werden in einer Schleife abgearbeitet 
+	for(line = 0; line < textarr.length; line++)
+	{ 
     //for a blank line we skip to the next code section
     if(textarr[line].length == 0){
       continue
     }
 
+    //input wird in entsprechende Font umgewandelt und dann in ein String zusammengefasst
     //input is changed into a specific font. after that the characters are summed up in a string.
 		let cagMoon = Font3D.cagFromString(fMoon, textarr[line], userTextSize); 
     let csgMoon = cagMoon[0].union(cagMoon);                
@@ -4117,35 +4120,36 @@ function main(params)
     csgMoon = csgMoon.extrude({offset: [0, 0, params.textHeight]});
 		
     //save CGS object to array
-		linearr.push(csgMoon.translate([0, 1.5 * userTextSize *  (textarr.length - line-1), 0])); 
+		linearr.push(csgMoon.translate([0, 1.5 * userTextSize *  (textarr.length - line-1), 0])); //einzelnen lines in einem array befullen.
 	}
 
-	//arrays are united and saved in csgMoon
+	//array wird in ein großes Objekt umgewandelt
 	var fullstr = new CSG();
 	fullstr = fullstr.union(linearr);
   let csgMoon = fullstr; 
 
-  // Get the bounding box of the CSG object.
-  let bounds = csgMoon.getBounds();
+    // Get the bounding box of the CSG object. src: chatgpt
+    let bounds = csgMoon.getBounds();
 
-  if (typeof bounds !== 'undefined' && bounds !== null) {
-    // bounds object is not empty or null, so we can access its properties
-    const max = bounds.max;
-  } 
-  else {
-    // bounds object is empty or null, so we can't access its properties
-    console.error('bounds object is empty or null');
-  }
+    if (typeof bounds !== 'undefined' && bounds !== null) {
+      // bounds object is not empty or null, so we can access its properties
+      const max = bounds.max;
+    } else {
+      // bounds object is empty or null, so we can't access its properties
+      console.error('bounds object is empty or null');
+    }
     
-  // Calculate the width and height from the bounding box
-  let width = bounds[1].y;
-  let height = bounds[1].x;
+    // Calculate the width and height from the bounding box
+    let width = bounds[1].y;
+    let height = bounds[1].x;
  
 
   //backplate size and color is beeing created
 	let backplate = new CSG.cube({
 		center: [height/2,width/2,-plate_thickness/2],
 		radius: [height/2,width/2,plate_thickness/2],
+    // center: [0,0,0],
+    // radius: [100,100,2],
 	});
 	backplate = backplate.setColor([0.4,0.4,0,0.8]);
   
@@ -4153,10 +4157,12 @@ function main(params)
 	
 	//if a backplate is used, we union both together
 	//if not, we need to half the braille dots (round spheres)
-	if(params.backPlate == true) {
+	if(params.backPlate == true)
+	{
 		finalobject = csgMoon.union(backplate);
 		//only if a backplate is used, we should render a support plate
-		if(params.supportPlate == true) {
+		if(params.supportPlate == true)
+		{
 			var support = new CSG.cube({
 				center: [5,width-1,-10],
 				radius: [2.5,1,10],
